@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Management System</title>
+    <style>
+        /* Basic CSS styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        .edit-button, .delete-button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        #customer-form {
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Customer Management System</h1>
+
+    <!-- Authentication Form -->
+    <form id="authentication-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required>
+        <br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+        <br>
+        <button type="submit">Login</button>
+    </form>
+
+    <!-- Customer List Table -->
+    <table id="customer-list">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Customer data will be populated here -->
+        </tbody>
+    </table>
+
+    <!-- Customer Form (Add/Update) -->
+    <form id="customer-form">
+        <input type="hidden" id="customer-id" name="customer-id">
+        <label for="customer-name">Name:</label>
+        <input type="text" id="customer-name" name="customer-name" required>
+        <br>
+        <label for="customer-email">Email:</label>
+        <input type="email" id="customer-email" name="customer-email" required>
+        <br>
+        <button type="submit">Save</button>
+    </form>
+
+    <!-- JavaScript -->
+    <script>
+        const authenticationUrl = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp";
+        const apiUrl = "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp";
+        let authToken = null;
+
+        // User credentials
+        const credentials = {
+            login_id: "test@sunbasedata.com",
+            password: "Test@123"
+        };
+
+        // Authenticate the user and obtain the Bearer token
+        fetch(authenticationUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(credentials)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Authentication failed");
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Assuming the API response contains a "token" field
+            authToken = data.token;
+            
+            // Create a new customer
+            const newCustomer = {
+                first_name: "Jane",
+                last_name: "Doe",
+                street: "ElvnuStreet",
+                address: "Hno2",
+                city: "Delhi",
+                state: "Delhi",
+                email: "sam@gmail.com",
+                phone: "12345678"
+            };
+
+            // Make a POST request to create a new customer
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${authToken}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    cmd: "create",
+                    ...newCustomer
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to create customer");
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                // Handle success or failure of creating a customer
+                if (responseData === "SuccessfullyCreated") {
+                    console.log("Customer created successfully.");
+                } else {
+                    console.error("Failed to create customer.");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+            // Get the list of customers
+            fetch(`${apiUrl}?cmd=get_customer_list`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${authToken}`,
+                    "Content-Type": "application/json",
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw an Error("Failed to get customer list");
+                }
+                return response.json();
+            })
+            .then(customerList => {
+                // Handle the customer list data
+                console.log("Customer list:", customerList);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+            // Delete a customer (replace 'uuid' with the actual UUID of the customer to delete)
+            const uuidToDelete = "uuid_of_customer_to_delete";
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${authToken}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    cmd: "delete",
+                    uuid: uuidToDelete
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to delete customer");
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                // Handle success or failure of deleting a customer
+                if (responseData === "Successfullydeleted") {
+                    console.log("Customer deleted successfully.");
+                } else {
+                    console.error("Failed to delete customer.");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+            // Update a customer (replace 'uuid' with the actual UUID of the customer to update)
+            const uuidToUpdate = "uuid_of_customer_to_update";
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${authToken}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    cmd: "update",
+                    uuid: uuidToUpdate,
+                    ...newCustomer
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to update customer");
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                // Handle success or failure of updating a customer
+                if (responseData === "SuccessfullyUpdated") {
+                    console.log("Customer updated successfully.");
+                } else {
+                    console.error("Failed to update customer.");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    </script>
+</body>
+</html>
