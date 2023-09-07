@@ -3,7 +3,6 @@
 <head>
     <title>Customer Management System</title>
     <style>
-        /* Basic CSS styles */
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -37,7 +36,6 @@
 <body>
     <h1>Customer Management System</h1>
 
-    <!-- Authentication Form -->
     <form id="authentication-form">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
@@ -48,7 +46,6 @@
         <button type="submit">Login</button>
     </form>
 
-    <!-- Customer List Table -->
     <table id="customer-list">
         <thead>
             <tr>
@@ -59,11 +56,10 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Customer data will be populated here -->
+
         </tbody>
     </table>
 
-    <!-- Customer Form (Add/Update) -->
     <form id="customer-form">
         <input type="hidden" id="customer-id" name="customer-id">
         <label for="customer-name">Name:</label>
@@ -87,7 +83,6 @@
             password: "Test@123"
         };
 
-        // Authenticate the user and obtain the Bearer token
         fetch(authenticationUrl, {
             method: "POST",
             headers: {
@@ -102,10 +97,8 @@
             return response.json();
         })
         .then(data => {
-            // Assuming the API response contains a "token" field
             authToken = data.token;
             
-            // Create a new customer
             const newCustomer = {
                 first_name: "Jane",
                 last_name: "Doe",
@@ -116,8 +109,6 @@
                 email: "sam@gmail.com",
                 phone: "12345678"
             };
-
-            // Make a POST request to create a new customer
             fetch(apiUrl, {
                 method: "POST",
                 headers: {
@@ -136,7 +127,6 @@
                 return response.json();
             })
             .then(responseData => {
-                // Handle success or failure of creating a customer
                 if (responseData === "SuccessfullyCreated") {
                     console.log("Customer created successfully.");
                 } else {
@@ -147,7 +137,6 @@
                 console.error(error);
             });
 
-            // Get the list of customers
             fetch(`${apiUrl}?cmd=get_customer_list`, {
                 method: "GET",
                 headers: {
@@ -162,14 +151,11 @@
                 return response.json();
             })
             .then(customerList => {
-                // Handle the customer list data
                 console.log("Customer list:", customerList);
             })
             .catch(error => {
                 console.error(error);
             });
-
-            // Delete a customer (replace 'uuid' with the actual UUID of the customer to delete)
             const uuidToDelete = "uuid_of_customer_to_delete";
             fetch(apiUrl, {
                 method: "POST",
@@ -189,7 +175,6 @@
                 return response.json();
             })
             .then(responseData => {
-                // Handle success or failure of deleting a customer
                 if (responseData === "Successfullydeleted") {
                     console.log("Customer deleted successfully.");
                 } else {
@@ -199,8 +184,6 @@
             .catch(error => {
                 console.error(error);
             });
-
-            // Update a customer (replace 'uuid' with the actual UUID of the customer to update)
             const uuidToUpdate = "uuid_of_customer_to_update";
             fetch(apiUrl, {
                 method: "POST",
@@ -221,7 +204,6 @@
                 return response.json();
             })
             .then(responseData => {
-                // Handle success or failure of updating a customer
                 if (responseData === "SuccessfullyUpdated") {
                     console.log("Customer updated successfully.");
                 } else {
